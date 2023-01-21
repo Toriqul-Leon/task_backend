@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -24,7 +24,6 @@ async function run() {
     // get all data
     const cursor = collection.find({});
     const results = await cursor.toArray();
-    console.log(results);
   } finally {
     await client.close();
   }
@@ -51,14 +50,58 @@ app.get("/formData", async (req, res) => {
   }
 });
 
-// post formData to users api (Name,Sectors,AgreeToTerms)
-app.post("/user", async (req, res) => {
+// Get User
+app.get("/user", async (req, res) => {
   try {
     await client.connect();
     const db = client.db("userDB");
     const collection = db.collection("userData");
-    const data = req.body;
-    const result = await collection.insertOne(data);
+    // get all data
+    const cursor = collection.find({});
+    const results = await cursor.toArray();
+    res.send(results);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// Get User by ID
+app.get("/user/:id", async (req, res) => {
+  try {
+    await client.connect();
+    const db = client.db("userDB");
+    const collection = db.collection("userData");
+    // update user
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const user = await collection.findOne(query);
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// PUT
+app.put("/user/:id", async (req, res) => {
+  try {
+    await client.connect();
+    const db = client.db("userDB");
+    const collection = db.collection("userData");
+    // update user
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    console.log(req.body);
+    const option = {
+      upsert: true,
+    };
+    const updatedUser = {
+      $set: {
+        name: req.body.name,
+        selectors: req.body.selectors,
+        agreeToTerms: req.body.agreeToTerms,
+      },
+    };
+    const result = await collection.updateOne(query, updatedUser, option);
     res.send(result);
   } catch (error) {
     console.log(error);
