@@ -81,7 +81,7 @@ app.get("/user/:id", async (req, res) => {
   }
 });
 
-// PUT
+// PUT user info
 app.put("/user/:id", async (req, res) => {
   try {
     await client.connect();
