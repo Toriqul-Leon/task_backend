@@ -3,12 +3,12 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
+require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  "mongodb+srv://taskDB:m2EB8NqlNUJQmNTm@cluster0.kam1qyh.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB}:${process.env.DB_PASS}@cluster0.kam1qyh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -97,7 +97,7 @@ app.put("/user/:id", async (req, res) => {
     const updatedUser = {
       $set: {
         name: req.body.name,
-        selectors: req.body.selectors,
+        sectors: req.body.sectors,
         agreeToTerms: req.body.agreeToTerms,
       },
     };
